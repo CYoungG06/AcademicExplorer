@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from dotenv import load_dotenv
 from openai import OpenAI
 # from transformers import AutoModelForCausalLM, AutoTokenizer
-from constants import DEFAULT_MODEL, OPENAI_BASE_URL
+from constants import DEFAULT_MODEL
 
 load_dotenv()
 
@@ -23,20 +23,28 @@ class BaseAgent(ABC):
 
 class APIAgent(BaseAgent):
     def __init__(self, model_name, _type: str):
-        if _type == "crawler":
+        from constants import USE_SGLANG, SGLANG_CRAWLER_URL, SGLANG_SELECTOR_URL, OPENAI_BASE_URL
+        
+        if USE_SGLANG:
+            # Use SGLang deployment
+            if _type == "crawler":
+                self.client = OpenAI(
+                    api_key=os.getenv("OPENAI_API_KEY"),
+                    base_url=SGLANG_CRAWLER_URL
+                )
+            else:  # selector
+                self.client = OpenAI(
+                    api_key=os.getenv("OPENAI_API_KEY"),
+                    base_url=SGLANG_SELECTOR_URL
+                )
+        else:
+            # Use DeepSeek API
             self.client = OpenAI(
                 api_key=os.getenv("OPENAI_API_KEY"),
-                # base_url=os.getenv("OPENAI_BASE_URL", OPENAI_BASE_URL)
-                base_url="http://localhost:8000/v1"
+                base_url=os.getenv("OPENAI_BASE_URL", OPENAI_BASE_URL)
             )
-            self.model_name = model_name
-        else:  # selector
-            self.client = OpenAI(
-                api_key=os.getenv("OPENAI_API_KEY"),
-                # base_url=os.getenv("OPENAI_BASE_URL", OPENAI_BASE_URL)
-                base_url="http://localhost:8001/v1"
-            )
-            self.model_name = model_name
+        
+        self.model_name = model_name
 
     def infer_score(self, prompts):
         if len(prompts) == 0:

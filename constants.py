@@ -3,6 +3,11 @@ Constants for the intelligent literature processing system.
 This file centralizes configuration values to make them easier to change.
 """
 
+# Deployment configuration
+USE_SGLANG = False  # Set to True to use SGLang, False to use DeepSeek API
+SGLANG_CRAWLER_URL = "http://localhost:8000/v1"
+SGLANG_SELECTOR_URL = "http://localhost:8001/v1"
+
 # Model names
 DEFAULT_MODEL = "deepseek-chat"  # Default model for all operations
 CRAWLER_MODEL = "deepseek-chat"  # Model for search crawling

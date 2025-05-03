@@ -51,12 +51,11 @@ def update_task_status(task_id: str, status: str, progress: float, result=None, 
 # Dependency to get SearchService
 def get_search_service():
     from agent import Agent
+    from constants import CRAWLER_MODEL, SELECTOR_MODEL
     
     try:
-        # crawler = Agent(os.getenv("CRAWLER_MODEL", "deepseek-chat"))
-        # selector = Agent(os.getenv("SELECTOR_MODEL", "deepseek-chat"))
-        crawler = Agent("qwen3-32B-FP8", "crawler")
-        selector = Agent("selector", "selector")
+        crawler = Agent(os.getenv("CRAWLER_MODEL", CRAWLER_MODEL), "crawler")
+        selector = Agent(os.getenv("SELECTOR_MODEL", SELECTOR_MODEL), "selector")
         return SearchService(crawler=crawler, selector=selector)
     except Exception as e:
         print(f"Failed to initialize agents: {e}")
