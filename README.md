@@ -87,6 +87,8 @@ Select model 使用 PaSa 提供的 Selector：[https://huggingface.co/bytedance-
 
 Search Model 使用 PaSa 提供的数据集进行 SFT：[https://huggingface.co/datasets/CarlanLark/pasa-dataset](https://huggingface.co/datasets/CarlanLark/pasa-dataset)
 
+Search Model：[https://huggingface.co/Kita0421/qwen3-pasa-sft](https://huggingface.co/Kita0421/qwen3-pasa-sft)
+
 使用 2 * H20 部署，两个模型各自放在一张卡上：
 
 ```bash
