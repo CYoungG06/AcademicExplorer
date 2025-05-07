@@ -1,26 +1,26 @@
-# 智能文献处理系统
+# AcademicExplorer
 
-基于大语言模型的智能文献处理平台，集检索与综述分析于一体，提升学术阅读与研究效率。
+LLM 驱动的文献智能体平台，集**检索与综述分析**于一体，提升学术阅读与研究效率。
 
 ## 系统功能
 
 本系统主要包含两个核心功能模块：
 
-1. **文献检索与引文网络扩展模块**：
-   - 根据用户查询生成多个搜索关键词
-   - 通过搜索API获取论文
-   - 支持引文网络扩展，深入挖掘相关文献
+1. **文献检索与引文网络扩展模块**（部分参考并修改自 PaSa：[https://github.com/bytedance/pasa](https://github.com/bytedance/pasa)）：
+   - 根据用户查询生成多个智能改写查询
+   - 通过谷歌检索 API 获取论文，由 ArXiv API 获取论文元信息
+   - 支持对每篇论文的动态引文网络扩展，深入挖掘相关文献
 
-2. **多文献对比综述模块**：
-   - 支持对多篇论文（最多5篇）进行对比综述
-   - 可以处理搜索到的论文或用户上传的PDF文件
-   - 使用MinerU提取PDF内容，转换为结构化数据
+2. **多文献对比综述模块**（部分参考自论文 ChatCite：[https://arxiv.org/abs/2403.02574](https://arxiv.org/abs/2403.02574)）：
+   - 支持对多篇论文进行对比综述
+   - 可以处理搜索到的论文或用户上传的 PDF 文件
+   - 使用 MinerU API 提取 PDF 内容，转换为结构化数据
 
 ## 技术架构
 
 - **前端**：HTML, CSS, JavaScript, Bootstrap
 - **后端**：FastAPI, Python
-- **核心技术**：大语言模型 (LLM)，PDF处理，文本分析
+- **核心技术**：LLM)，PDF处理，文本分析
 
 ## 系统架构图
 
@@ -29,7 +29,7 @@
                          |
                          ├── 文献检索模块
                          |   ├── 搜索论文 (PaperAgent)
-                         |   └── 扩展引文 (引文扩展)
+                         |   └── 扩展引文 (ExpandPaper)
                          |
                          └── 对比综述模块
                              ├── 处理PDF (MinerU)
@@ -41,18 +41,18 @@
 
 ### 环境要求
 
-- Python 3.8+
-- 相关API密钥:
-  - OpenAI API密钥
-  - Google Search API密钥
-  - MinerU API密钥
+- Python 3.10+
+- 相关 API 密钥:
+  - OpenAI-like API 密钥
+  - Google Search API 密钥（Serper）
+  - MinerU API 密钥
 
 ### 安装步骤
 
 1. 克隆仓库
 
 ```bash
-git clone https://github.com/yourusername/my_search.git
+git clone https://github.com/CYoungG06/AcademicExplorer.git
 cd my_search
 ```
 
@@ -79,19 +79,16 @@ REVIEW_MODEL=qwen-max-2025-01-25  # 可选，默认为qwen-max-2025-01-25
 4. 运行应用
 
 ```bash
-uvicorn app:app --host 0.0.0.0 --port 8000 --reload
+cd AcademicExplorer
+python run.py
 ```
-
-5. 访问应用
-
-打开浏览器，访问 http://localhost:8000
 
 ## API文档
 
 启动应用后，可以通过以下URL访问API文档：
 
-- Swagger UI: http://localhost:8000/docs
-- ReDoc: http://localhost:8000/redoc
+- Swagger UI: http://localhost:your_port/docs
+- ReDoc: http://localhost:your_port/redoc
 
 ## 主要API端点
 
@@ -120,40 +117,6 @@ uvicorn app:app --host 0.0.0.0 --port 8000 --reload
 - `GET /api/utils/temp`: 获取所有临时文件
 - `DELETE /api/utils/temp/{task_id}`: 删除任务的临时文件
 - `DELETE /api/utils/temp`: 清理所有临时文件
-
-## 项目结构
-
-```
-my_search/
-├── app.py                      # FastAPI主应用
-├── routers/                    # API路由
-│   ├── search.py               # 文献检索相关路由
-│   ├── review.py               # 对比综述相关路由
-│   └── utils.py                # 工具类路由
-├── services/                   # 业务逻辑
-│   ├── search_service.py       # 文献检索服务
-│   ├── review_service.py       # 对比综述服务
-│   └── pdf_service.py          # PDF处理服务
-├── ComparativeReviewer/        # 对比综述模块
-│   ├── KeyElementExtractor.py  # 关键要素提取
-│   ├── MinerU.py               # PDF处理
-│   ├── ReviewGenerator.py      # 综述生成
-│   └── ReviewSynthesizer.py    # 综述合成
-├── static/                     # 静态文件
-│   └── index.html              # 前端页面
-├── expand_paper.py             # 引文扩展模块
-├── paper_agent.py              # 论文代理模块
-├── paper_node.py               # 论文节点模块
-├── agent.py                    # 代理模块
-├── search_from_google.py       # Google搜索模块
-├── prompts.json                # 提示词模板
-├── requirements.txt            # 项目依赖
-└── .env                        # 环境变量
-```
-
-## 贡献
-
-欢迎提交问题和拉取请求。
 
 ## 许可证
 
