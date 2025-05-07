@@ -53,7 +53,6 @@ LLM 驱动的文献智能体平台，集**检索与综述分析**于一体，提
 
 ```bash
 git clone https://github.com/CYoungG06/AcademicExplorer.git
-cd my_search
 ```
 
 2. 安装依赖
@@ -79,7 +78,6 @@ REVIEW_MODEL=qwen-max-2025-01-25  # 可选，默认为qwen-max-2025-01-25
 4. 运行应用
 
 ```bash
-cd AcademicExplorer
 python run.py
 ```
 
