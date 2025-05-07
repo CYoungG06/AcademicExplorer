@@ -81,6 +81,22 @@ REVIEW_MODEL=qwen-max-2025-01-25  # 可选，默认为qwen-max-2025-01-25
 python run.py
 ```
 
+5. 使用 SGLang 部署
+
+Select model 使用 PaSa 提供的 Selector：[https://huggingface.co/bytedance-research/pasa-7b-selector](https://huggingface.co/bytedance-research/pasa-7b-selector)
+
+Search Model 使用 PaSa 提供的数据集进行 SFT：[https://huggingface.co/datasets/CarlanLark/pasa-dataset](https://huggingface.co/datasets/CarlanLark/pasa-dataset)
+
+使用 2 * H20 部署，两个模型各自放在一张卡上：
+
+```bash
+export CUDA_VISIBLE_DEVICES=0
+python -m sglang.launch_server --model-path your-model-path --port xxxx
+
+export CUDA_VISIBLE_DEVICES=1
+python -m sglang.launch_server --model-path your-model-path --port xxxx
+```
+
 ## API文档
 
 启动应用后，可以通过以下URL访问API文档：
