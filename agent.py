@@ -63,15 +63,22 @@ class APIAgent(BaseAgent):
                 logprobs=True,
                 top_logprobs=1,
             )
-
+    
             logprobs_data = response.choices[0].logprobs.content[0].top_logprobs
             for item in logprobs_data:
-                token_probabilities.append({
-                    'token': item.token,
-                    'logprob': item.logprob,
-                    'probability': math.exp(item.logprob)
-                })
-
+                if item.token.lower() == "true":
+                    token_probabilities.append({
+                        'token': item.token,
+                        'logprob': item.logprob,
+                        'probability': math.exp(item.logprob)
+                    })
+                else:
+                    token_probabilities.append({
+                        'token': item.token,
+                        'logprob': item.logprob,
+                        'probability': 1 - math.exp(item.logprob)
+                    })
+    
         return token_probabilities
     
     def infer(self, prompt, sample=False):
