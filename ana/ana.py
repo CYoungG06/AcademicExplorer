@@ -21,44 +21,41 @@ def parse_score(score_str):
 
 def analyze_relevance_data_corrected(relevance_list):
     """
-    根据新的理解分析单个论文的相关性列表。
-    'probability' 字段是 P(Relevant)。'token' 是一个分类。
-    返回 (classified_as_true, p_relevant_float)。
-    - classified_as_true: 如果 token == "True" 则为 True，否则为 False。
-    - p_relevant_float: 来自 JSON 的 'probability' 值。如果未找到或无效，则返回 0.0。
+    Analyzes the relevance list for a single paper.
+    'probability' field is P(Relevant). 'token' is a classification.
+    Returns (classified_as_true, p_relevant_float).
     """
-    if not relevance_list or not isinstance(relevance_list, list) or not relevance_list[0]: # 确保列表不为空且至少有一个元素
+    if not relevance_list or not isinstance(relevance_list, list) or not relevance_list[0]:
         return False, 0.0
 
-    item = relevance_list[0] # 假设每个列表只有一个项目
+    item = relevance_list[0]
     if not isinstance(item, dict):
         return False, 0.0
 
     classified_as_true = (item.get('token') == 'True')
-    p_relevant_val = item.get('probability') # probability 字段代表 P(Relevant)
+    p_relevant_val = item.get('probability')
 
     p_relevant_float = 0.0
     if p_relevant_val is not None:
         try:
             p_relevant_float = float(p_relevant_val)
         except (ValueError, TypeError):
-            # 如果转换失败，p_relevant_float 保持 0.0
             pass
             
     return classified_as_true, p_relevant_float
 
 def process_file_data(file_path):
     """
-    处理单个 JSON 文件并提取关键指标。
+    Processes a single JSON file and extracts key metrics.
     """
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
             data = json.load(f)
     except FileNotFoundError:
-        print(f"错误: 文件未找到 {file_path}")
+        print(f"Error: File not found at {file_path}")
         return None
     except json.JSONDecodeError:
-        print(f"错误: 无法解码 JSON 文件 {file_path}")
+        print(f"Error: Could not decode JSON from {file_path}")
         return None
 
     results = {
@@ -66,25 +63,22 @@ def process_file_data(file_path):
         "original_queries_assessments": [],
         "all_rewritten_queries_scores": [],
         "rewritten_queries_details": [],
-        "all_paper_relevance_probabilities": [] # 存储所有论文的 P(Relevant) 值
+        "all_paper_relevance_probabilities": []
     }
 
     total_papers_retrieved = 0
-    total_papers_classified_true = 0 # 被分类为 "True" 的论文总数
-    sum_relevance_prob_for_classified_true_papers = 0.0 # 被分类为 "True" 的论文的相关概率总和
-    # all_paper_relevance_probabilities 将用于计算所有论文的平均相关概率
-
+    total_papers_classified_true = 0
+    sum_relevance_prob_for_classified_true_papers = 0.0
     num_rewritten_queries_with_any_classified_true_papers = 0
     sum_avg_relevance_prob_for_queries_with_classified_true_papers = 0.0
 
-
     if not isinstance(data, list):
-        print(f"错误: {file_path} 中期望的是列表，但得到的是 {type(data)}")
+        print(f"Error: Expected a list of items in {file_path}, but got {type(data)}")
         return None
 
     for item_idx, item in enumerate(data):
         if not isinstance(item, dict):
-            print(f"警告: {file_path} 中的项目 {item_idx} 不是字典，已跳过。")
+            print(f"Warning: Item {item_idx} in {file_path} is not a dictionary, skipping.")
             continue
 
         original_query = item.get("original_query")
@@ -104,12 +98,12 @@ def process_file_data(file_path):
 
         query_papers_data = item.get("query_papers", {})
         if not isinstance(query_papers_data, dict):
-            print(f"警告: 原始查询 '{original_query}' 的 'query_papers' 不是字典，已跳过。")
+            print(f"Warning: 'query_papers' for original query '{original_query}' is not a dict, skipping.")
             continue
             
         for rewritten_query, details in query_papers_data.items():
             if not isinstance(details, dict):
-                print(f"警告:改写查询 '{rewritten_query}' 的详细信息不是字典，已跳过。")
+                print(f"Warning: Details for rewritten query '{rewritten_query}' is not a dict, skipping.")
                 continue
                 
             query_eval = details.get("query_evaluation", {})
@@ -121,7 +115,7 @@ def process_file_data(file_path):
 
             papers = details.get("papers", [])
             if not isinstance(papers, list):
-                print(f"警告: 改写查询 '{rewritten_query}' 的 'papers' 不是列表，已跳过。")
+                print(f"Warning: 'papers' for rewritten query '{rewritten_query}' is not a list, skipping.")
                 papers = []
                 
             num_papers_for_this_rewritten_query = len(papers)
@@ -134,7 +128,7 @@ def process_file_data(file_path):
 
             for paper_idx, paper in enumerate(papers):
                 if not isinstance(paper, dict):
-                    print(f"警告: 查询 '{rewritten_query}' 的论文 {paper_idx} 不是字典，已跳过。")
+                    print(f"Warning: Paper {paper_idx} for query '{rewritten_query}' is not a dict, skipping.")
                     continue
                 
                 classified_as_true, p_relevant = analyze_relevance_data_corrected(paper.get("relevance"))
@@ -208,10 +202,17 @@ def process_file_data(file_path):
     }
 
     if not df_rewritten_queries.empty and 'rewritten_query_score' in df_rewritten_queries.columns and len(df_rewritten_queries) > 1:
+        # Ensure 'rewritten_query_score' is numeric and drop NaNs for correlation calculation
         df_rewritten_queries['rewritten_query_score'] = pd.to_numeric(df_rewritten_queries['rewritten_query_score'], errors='coerce')
-        df_corr = df_rewritten_queries.dropna(subset=['rewritten_query_score']) 
+        df_corr = df_rewritten_queries.dropna(subset=['rewritten_query_score'])
 
-        if len(df_corr) > 1:
+        if len(df_corr) > 1: # Need at least 2 valid data points for correlation
+            # Ensure target columns for correlation are also numeric and handle potential NaNs if necessary
+            # For these specific metrics, 0 is a valid value if no papers were classified true, etc.
+            df_corr.loc[:, 'num_papers_classified_true'] = pd.to_numeric(df_corr['num_papers_classified_true'], errors='coerce').fillna(0)
+            df_corr.loc[:, 'avg_relevance_probability_classified_true_in_query'] = pd.to_numeric(df_corr['avg_relevance_probability_classified_true_in_query'], errors='coerce').fillna(0)
+            df_corr.loc[:, 'avg_relevance_probability_all_papers_in_query'] = pd.to_numeric(df_corr['avg_relevance_probability_all_papers_in_query'], errors='coerce').fillna(0)
+            
             correlation_results["correlation_score_vs_num_classified_true"] = df_corr['rewritten_query_score'].corr(
                 df_corr['num_papers_classified_true']
             )
@@ -225,48 +226,67 @@ def process_file_data(file_path):
     results.update(correlation_results)
     return results
 
-# --- 主脚本执行 ---
+# --- Main script execution ---
 if __name__ == "__main__":
-    # 替换为您的 JSON 文件的实际路径
-    file_path_sft = 'search_evaluation_results_sft.json'
-    file_path_base = 'search_evaluation_results.json'
+    files_to_analyze = [
+        {"name": "SFT", "path": "search_evaluation_results_sft.json"},
+        {"name": "Base", "path": "search_evaluation_results.json"},
+        {"name": "DS", "path": "ds_search_evaluation_results.json"},
+        {"name": "P", "path": "p_search_evaluation_results.json"}
+    ]
 
-    print(f"正在处理 SFT 文件: {file_path_sft}")
-    data_sft = process_file_data(file_path_sft)
-    
-    print(f"\n正在处理 Base 文件: {file_path_base}")
-    data_base = process_file_data(file_path_base)
+    all_results_data = {}
 
-    print("\n\n--- 分析结果 ---")
+    for file_info in files_to_analyze:
+        print(f"Processing {file_info['name']} file: {file_info['path']}")
+        data = process_file_data(file_info['path'])
+        if data:
+            all_results_data[file_info['name']] = data
+        print("-" * 30)
 
-    if data_sft:
-        print("\n--- SFT 文件结果 ---")
-        for key, value in data_sft.items():
-            if key not in ["original_queries_assessments", "rewritten_queries_details", "all_rewritten_queries_scores", "all_paper_relevance_probabilities"]:
-                print(f"{key}: {value}")
-    
-    if data_base:
-        print("\n--- Base 文件结果 ---")
-        for key, value in data_base.items():
-            if key not in ["original_queries_assessments", "rewritten_queries_details", "all_rewritten_queries_scores", "all_paper_relevance_probabilities"]:
-                 print(f"{key}: {value}")
+    print("\n\n--- Aggregated Analysis Results ---")
 
-    if data_sft and data_base:
-        print("\n\n--- 直接对比亮点 ---")
-        print(f"平均总体评估分数 (SFT): {data_sft.get('average_overall_assessment_score', 'N/A')}")
-        print(f"平均总体评估分数 (Base): {data_base.get('average_overall_assessment_score', 'N/A')}")
+    for name, results_data in all_results_data.items():
+        print(f"\n--- {name} File Results ---")
+        if results_data:
+            for key, value in results_data.items():
+                # Exclude printing very long list fields for brevity in summary
+                if key not in ["original_queries_assessments", 
+                               "rewritten_queries_details", 
+                               "all_rewritten_queries_scores", 
+                               "all_paper_relevance_probabilities"]:
+                    print(f"{key}: {value}")
+        else:
+            print(f"No data processed for {name}.")
+
+    # --- Direct Comparison Highlights ---
+    if all_results_data:
+        print("\n\n--- Direct Comparison Highlights ---")
         
-        print(f"平均改写查询分数 (SFT): {data_sft.get('avg_rewritten_query_score', 'N/A')}")
-        print(f"平均改写查询分数 (Base): {data_base.get('avg_rewritten_query_score', 'N/A')}")
+        metrics_to_compare = [
+            "average_overall_assessment_score",
+            "avg_rewritten_query_score",
+            "percentage_papers_classified_true",
+            "avg_relevance_probability_all_retrieved_papers",
+            "correlation_score_vs_num_classified_true",
+            "correlation_score_vs_avg_relevance_prob_all_papers_for_query"
+        ]
 
-        print(f"被分类为 True 的论文百分比 (SFT): {data_sft.get('percentage_papers_classified_true', 'N/A')}%")
-        print(f"被分类为 True 的论文百分比 (Base): {data_base.get('percentage_papers_classified_true', 'N/A')}%")
-        
-        print(f"所有检索论文的平均相关概率 (SFT): {data_sft.get('avg_relevance_probability_all_retrieved_papers', 'N/A')}")
-        print(f"所有检索论文的平均相关概率 (Base): {data_base.get('avg_relevance_probability_all_retrieved_papers', 'N/A')}")
+        # Header for the comparison table
+        header = "| Metric                                                      | " + " | ".join(all_results_data.keys()) + " |"
+        print(header)
+        separator = "|:------------------------------------------------------|:" + ":|:".join(["-"*len(name) for name in all_results_data.keys()]) + ":|"
+        print(separator)
 
-        print(f"查询分数 vs. 被分类为True论文数的相关性 (SFT): {data_sft.get('correlation_score_vs_num_classified_true', 'N/A')}")
-        print(f"查询分数 vs. 被分类为True论文数的相关性 (Base): {data_base.get('correlation_score_vs_num_classified_true', 'N/A')}")
-        
-        print(f"查询分数 vs. 所有论文平均相关概率的相关性 (SFT): {data_sft.get('correlation_score_vs_avg_relevance_prob_all_papers_for_query', 'N/A')}")
-        print(f"查询分数 vs. 所有论文平均相关概率的相关性 (Base): {data_base.get('correlation_score_vs_avg_relevance_prob_all_papers_for_query', 'N/A')}")
+        for metric_key in metrics_to_compare:
+            row_values = [f"{results.get(metric_key, 'N/A'):.3f}" if isinstance(results.get(metric_key), float) else str(results.get(metric_key, 'N/A')) for name, results in all_results_data.items()]
+            # Adjust metric name display for readability
+            metric_display_name = metric_key.replace("_", " ").title()
+            if "Percentage" in metric_display_name:
+                 row_values = [f"{results.get(metric_key, 'N/A'):.2f}%" if isinstance(results.get(metric_key), float) else str(results.get(metric_key, 'N/A')) for name, results in all_results_data.items()]
+
+
+            print(f"| {metric_display_name:<53} | " + " | ".join(f"{val:<{len(name)}}" for val, name in zip(row_values, all_results_data.keys())) + " |")
+            
+    else:
+        print("No data was processed successfully to show comparison highlights.")

@@ -1,0 +1,80 @@
+--- Aggregated Analysis Results ---
+
+--- SFT File Results ---
+file_path: search_evaluation_results_sft.json
+average_overall_assessment_score: 41.42542553191489
+num_original_queries_processed: 47
+total_rewritten_queries: 319
+avg_rewritten_query_score: 40.98119122257053
+total_papers_retrieved: 1430
+total_papers_classified_true: 724
+percentage_papers_classified_true: 50.62937062937063
+avg_relevance_probability_all_retrieved_papers: 0.5256533804799817
+avg_relevance_probability_for_classified_true_papers: 0.8464620863051754
+avg_classified_true_papers_per_rewritten_query: 2.269592476489028
+avg_relevance_prob_for_queries_with_classified_true_papers: 0.8333251304342232
+correlation_score_vs_num_classified_true: -0.01056656359240943
+correlation_score_vs_avg_relevance_prob_classified_true_for_query: -0.0520856278703354
+correlation_score_vs_avg_relevance_prob_all_papers_for_query: -0.032050325485586666
+
+--- Base File Results ---
+file_path: search_evaluation_results.json
+average_overall_assessment_score: 43.50204081632653
+num_original_queries_processed: 50
+total_rewritten_queries: 245
+avg_rewritten_query_score: 43.326530612244895
+total_papers_retrieved: 1145
+total_papers_classified_true: 452
+percentage_papers_classified_true: 39.47598253275109
+avg_relevance_probability_all_retrieved_papers: 0.43520667962589704
+avg_relevance_probability_for_classified_true_papers: 0.838138285206325
+avg_classified_true_papers_per_rewritten_query: 1.8448979591836734
+avg_relevance_prob_for_queries_with_classified_true_papers: 0.8274331980633046
+correlation_score_vs_num_classified_true: 0.16937529499880166
+correlation_score_vs_avg_relevance_prob_classified_true_for_query: 0.17838977815158377
+correlation_score_vs_avg_relevance_prob_all_papers_for_query: 0.2137793202510801
+
+--- DS File Results ---
+file_path: ds_search_evaluation_results.json
+average_overall_assessment_score: 43.074999999999996
+num_original_queries_processed: 50
+total_rewritten_queries: 240
+avg_rewritten_query_score: 42.90416666666667
+total_papers_retrieved: 1135
+total_papers_classified_true: 385
+percentage_papers_classified_true: 33.92070484581498
+avg_relevance_probability_all_retrieved_papers: 0.4084814594271008
+avg_relevance_probability_for_classified_true_papers: 0.7724871680308351
+avg_classified_true_papers_per_rewritten_query: 1.6041666666666667
+avg_relevance_prob_for_queries_with_classified_true_papers: 0.7565085768862789
+correlation_score_vs_num_classified_true: -0.013185762588840511
+correlation_score_vs_avg_relevance_prob_classified_true_for_query: -0.01915679938102868
+correlation_score_vs_avg_relevance_prob_all_papers_for_query: -0.01689246337376661
+
+--- P File Results ---
+file_path: p_search_evaluation_results.json
+average_overall_assessment_score: 40.18571428571429
+num_original_queries_processed: 50
+total_rewritten_queries: 222
+avg_rewritten_query_score: 39.986486486486484
+total_papers_retrieved: 1019
+total_papers_classified_true: 494
+percentage_papers_classified_true: 48.47890088321884
+avg_relevance_probability_all_retrieved_papers: 0.5140119605271442
+avg_relevance_probability_for_classified_true_papers: 0.8578924409922417
+avg_classified_true_papers_per_rewritten_query: 2.225225225225225
+avg_relevance_prob_for_queries_with_classified_true_papers: 0.8333769678600147
+correlation_score_vs_num_classified_true: -0.06589892295574389
+correlation_score_vs_avg_relevance_prob_classified_true_for_query: -0.01055576556339666
+correlation_score_vs_avg_relevance_prob_all_papers_for_query: -0.09494115322505554
+
+
+--- Direct Comparison Highlights ---
+| Metric                                                      | SFT | Base | DS | P |
+|:------------------------------------------------------|:---:|:----:|:--:|:-:|
+| Average Overall Assessment Score                      | 41.425 | 43.502 | 43.075 | 40.186 |
+| Avg Rewritten Query Score                             | 40.981 | 43.327 | 42.904 | 39.986 |
+| Percentage Papers Classified True                     | 50.63% | 39.48% | 33.92% | 48.48% |
+| Avg Relevance Probability All Retrieved Papers        | 0.526 | 0.435 | 0.408 | 0.514 |
+| Correlation Score Vs Num Classified True              | -0.011 | 0.169 | -0.013 | -0.066 |
+| Correlation Score Vs Avg Relevance Prob All Papers For Query | -0.032 | 0.214 | -0.017 | -0.095 |
